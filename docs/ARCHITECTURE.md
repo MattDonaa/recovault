@@ -124,6 +124,24 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Takealot Adapter (established at Milestone 05)
+- **First real marketplace adapter** (`src/integrations/takealot/`) implementing
+  the generic `MarketplaceAdapter` contract over the **verified** Takealot
+  Marketplace API (OpenAPI 3.1.1 at `marketplace-api.takealot.com/v1`; provenance
+  in `docs/TAKEALOT_API.md`).
+- **Auth:** `X-API-Key` header injected inside the transport only; server-side,
+  never client-persisted, never logged/echoed (redacted defensively).
+- **Pagination:** continuation-token semantics, exposed as the generic opaque
+  cursor; each record yielded exactly once.
+- **Money:** all amounts ZAR → canonical integer minor units (× 100).
+- **Zod schemas** encoded only from verified fields; malformed payloads fail
+  closed (quarantined). **Deterministic mapping** to canonical DTOs, incl. the
+  verified `transaction_type` enum table, return-outcome and shipment-state
+  maps; shipments expand to one canonical record per item.
+- **Date-window splitter** for historical sync (contiguous, no gaps/overlap).
+- **CI is network-free:** all tests use injected HTTP (mocked fetch). Live calls
+  are deferred to the live-pilot milestone.
+
 ## Authentication & Authorization (established at Milestone 03)
 - **Email/password auth** behind provider-agnostic contracts
   (`src/core/auth/types.ts`); the mode is chosen once in `src/lib/auth/`:
@@ -150,6 +168,7 @@ src/
     marketplace/  Generic adapter contract, canonical DTOs, pagination, fixtures/manifest types
   integrations/   Marketplace adapters under integrations/<marketplace>/
     mock/         MockMarketplaceAdapter + synthetic fixtures & manifests
+    takealot/     TakealotMarketplaceAdapter (verified schemas, transport, mapper)
   recovery/       Deterministic recovery rules (MR-00x) — empty until later milestones
   lib/            Cross-cutting infrastructure
     auth/         Provider/store wiring: mock (in-memory) + supabase (live)
