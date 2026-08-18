@@ -5,8 +5,8 @@ import { z } from "zod";
  * migrations (the schema source of truth) and provide the typed, validated
  * boundary the application uses when reading rows out of the database.
  *
- * Marketplace-agnostic: no brand ("RecoVault") or marketplace ("Takealot")
- * name appears in any table, type, or field identifier here.
+ * Marketplace-agnostic: no brand or marketplace name appears in any table,
+ * type, or field identifier here.
  */
 
 export const ORG_ROLES = ["owner", "admin", "member"] as const;

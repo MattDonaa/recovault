@@ -108,6 +108,22 @@ No next milestone begins while a required check is RED.
 - **RLS testing:** migrations run against embedded Postgres (PGlite) with a
   Supabase auth shim — deterministic, offline, no Docker.
 
+## Marketplace Contract & Mock Adapter (established at Milestone 04)
+- **Generic contract** (`src/core/marketplace/`): a single `MarketplaceAdapter`
+  interface with capabilities (connection, seller metadata, offers, sales,
+  returns, shipments, transactions, balances), canonical Zod DTOs (money as
+  integer minor units + ISO-4217; UTC timestamps), an opaque cursor pagination
+  abstraction, and fail-closed boundary validation that quarantines malformed
+  payloads (never normalizes them).
+- **Mock adapter + fixtures** (`src/integrations/mock/`): `MockMarketplaceAdapter`
+  serves 12 synthetic scenario fixtures, each with a machine-checkable manifest
+  declaring expected record counts and future detector outcomes. Full catalog in
+  `docs/FIXTURES.md`.
+- **Core purity:** no marketplace-specific name or type appears in `src/core`,
+  and core never imports `@/integrations` (enforced by test).
+- **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
+  clearly labeled, not persisted) and view adapter-derived counts.
+
 ## Authentication & Authorization (established at Milestone 03)
 - **Email/password auth** behind provider-agnostic contracts
   (`src/core/auth/types.ts`); the mode is chosen once in `src/lib/auth/`:
@@ -131,7 +147,9 @@ src/
   core/           Marketplace-agnostic domain (marketplace-recovery)
     tenancy/      Row schemas/types for the tenant tables
     auth/         Auth/session/authorization contracts + guards (provider-agnostic)
-  integrations/   Marketplace adapters under integrations/<marketplace>/ — empty until later milestones
+    marketplace/  Generic adapter contract, canonical DTOs, pagination, fixtures/manifest types
+  integrations/   Marketplace adapters under integrations/<marketplace>/
+    mock/         MockMarketplaceAdapter + synthetic fixtures & manifests
   recovery/       Deterministic recovery rules (MR-00x) — empty until later milestones
   lib/            Cross-cutting infrastructure
     auth/         Provider/store wiring: mock (in-memory) + supabase (live)
