@@ -1,8 +1,8 @@
 # RecoVault — Project State
 
 ## Current Status
-- **Last GREEN milestone:** 06 — Secure Marketplace Connection
-- **Current allowed milestone:** 07 — Ingestion & Source Records
+- **Last GREEN milestone:** 07 — Idempotent Ingestion & Source Records
+- **Current allowed milestone:** 08 — Marketplace Ledger
 - **Operating mode:** MOCK-FIRST (auth runs in MOCK mode; Supabase + Takealot live paths implemented but unverified)
 - **Live seller credentials:** NOT AVAILABLE
 - **Live marketplace validation:** BLOCKED UNTIL AUTHORIZED SELLER ACCESS EXISTS
@@ -32,7 +32,7 @@ Planned, but not implemented until their milestone is GREEN:
 - MR-003 — Stock-Loss Event Without Matching Recovery
 
 ## Database State
-- **Schema migration version:** 0003 (`0001_tenancy_core.sql`, `0002_tenancy_rls.sql`, `0003_marketplace_credentials.sql`)
+- **Schema migration version:** 0004 (`0001_tenancy_core.sql`, `0002_tenancy_rls.sql`, `0003_marketplace_credentials.sql`, `0004_ingestion_source_records.sql`)
 - **Supabase schema:** DEFINED via migrations (not yet applied to a live project)
 - **RLS:** ENABLED + tested on all tenant tables (deny cross-tenant by default)
 
@@ -40,7 +40,9 @@ Planned, but not implemented until their milestone is GREEN:
 - Authentication & Organization Boundary: IMPLEMENTED (M03) — mock-mode verified; Supabase live path unverified
 - Marketplace Contract & Mock Adapter: IMPLEMENTED (M04) — generic contract + MockMarketplaceAdapter + 12 fixtures
 - Takealot Adapter: IMPLEMENTED (M05) — contract-verified; live calls unverified until live pilot
-- Marketplace Ledger: NOT IMPLEMENTED — target Milestone 08
+- Secure Marketplace Connection: IMPLEMENTED (M06) — encrypted credentials, RLS-isolated, never-faked verification
+- Ingestion & Source Records: IMPLEMENTED (M07) — idempotent sync, full provenance, quarantine, tenant-isolated
+- Marketplace Ledger: NOT IMPLEMENTED — target Milestone 08 (NEXT ALLOWED)
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11
@@ -57,16 +59,16 @@ Planned, but not implemented until their milestone is GREEN:
 - **Dependency audit:** 3 transitive HIGH advisories remain (`postcss` and `sharp`, both pulled in by Next.js). Their only fix is a Next.js 16 major upgrade, which removes `next lint` and would force an ESLint-flat-config migration. Both are build-time-only and non-exploitable in the current surface (`postcss` processes only our own trusted CSS; `sharp` runs only under `next/image` optimization, which is unused). Next.js is pinned to the patched **15.5.23** (direct CVE-2025-66478 resolved). The Next.js 16 migration is deferred to a dedicated, human-approved upgrade task.
 
 ## Current Development Permission
-Milestone 06 is GREEN. Claude Code may execute **Milestone 07 ONLY** once explicitly instructed.
+Milestone 07 is GREEN. Claude Code may execute **Milestone 08 ONLY** once explicitly instructed.
 
-It must not begin Milestone 08 or later until Milestone 07 passes every mandatory GREEN gate and this document is updated.
+It must not begin Milestone 09 or later until Milestone 08 passes every mandatory GREEN gate and this document is updated.
 
 ## Next Allowed Action
-Await explicit human instruction to begin Milestone 07. Then read, in order:
+Await explicit human instruction to begin Milestone 08. Then read, in order:
 1. `00-claude.md`
 2. `docs/PROJECT_STATE.md`
 3. `docs/ARCHITECTURE.md`
-4. `milestones/07-ingestion-source-records.md`
+4. `milestones/08-marketplace-ledger.md`
 
 Run the prior verification commands (`npm run check`, `npm run test:e2e`) before starting Milestone 04.
 

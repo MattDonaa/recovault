@@ -31,6 +31,10 @@ describe("tenancy migrations", () => {
       "marketplace_credentials",
       "organization_members",
       "organizations",
+      "source_record_rejections",
+      "source_records",
+      "sync_checkpoints",
+      "sync_jobs",
     ]);
   });
 

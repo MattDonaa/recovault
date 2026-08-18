@@ -124,6 +124,20 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Ingestion & Source Records (established at Milestone 07)
+- **Persistence** (migration 0004): `sync_jobs`, `source_records`,
+  `source_record_rejections`, `sync_checkpoints` — all tenant-isolated by RLS
+  (members read their org; writes server/service-role).
+- **Provenance** (SOURCE RECORD LAW): org/account, marketplace, external
+  type/id, source + ingestion timestamps, schema version, SHA-256 payload hash,
+  validated canonical payload, sync job id; first-seen provenance is immutable.
+- **Idempotent engine** (`src/core/ingestion/`): adapter fetch → validate
+  (fail-closed quarantine) → `ON CONFLICT` upsert keyed on
+  `(account, external_type, external_id)` → checkpoint → sanitized diagnostics.
+  Re-running an identical sync changes nothing; interrupted syncs retry safely.
+  Store implementations are pg-like (`src/lib/ingestion/sql-store.ts`); proven
+  on PGlite. Model in `docs/INGESTION.md`.
+
 ## Secure Marketplace Connection (established at Milestone 06)
 - **Credential separation:** encrypted secrets live in a dedicated
   `marketplace_credentials` table (migration 0003), separate from account
