@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { env } from "@/lib/env";
 
 export default function HomePage() {
@@ -22,9 +23,14 @@ export default function HomePage() {
       >
         Environment: {env.NEXT_PUBLIC_APP_ENV}
       </p>
-      <Button variant="outline" disabled>
-        Product functionality arrives in later milestones
-      </Button>
+      <div className="flex gap-3">
+        <Link href="/signup" className={buttonVariants()}>
+          Get started
+        </Link>
+        <Link href="/login" className={buttonVariants({ variant: "outline" })}>
+          Log in
+        </Link>
+      </div>
     </main>
   );
 }

@@ -108,15 +108,36 @@ No next milestone begins while a required check is RED.
 - **RLS testing:** migrations run against embedded Postgres (PGlite) with a
   Supabase auth shim — deterministic, offline, no Docker.
 
+## Authentication & Authorization (established at Milestone 03)
+- **Email/password auth** behind provider-agnostic contracts
+  (`src/core/auth/types.ts`); the mode is chosen once in `src/lib/auth/`:
+  Supabase Auth + DB in live mode, a contract-faithful in-memory provider/store
+  in MOCK-FIRST/offline/test mode.
+- **App-managed sessions:** an HMAC-signed `rv_session` cookie minted after the
+  provider verifies credentials (`src/core/auth/session.ts`), uniform across
+  modes.
+- **Server-side authorization is the source of truth:** `requireSession` and
+  `requireOrgAccess` (`src/core/auth/guards.ts`) enforce access in server
+  components/actions regardless of UI; non-members get a 404. Edge middleware is
+  a coarse first guard only. Full model in `docs/AUTH.md`.
+- **Secrets:** service-role key and session secret are server-only; an E2E test
+  proves they never reach the client bundle.
+
 ## Repository Layout (established at Milestone 01)
 ```
 src/
   app/            Next.js App Router (routes, layout, health endpoint)
   components/     Presentation components (shadcn/ui primitives under ui/)
-  core/           Marketplace-agnostic domain (marketplace-recovery) — empty until later milestones
+  core/           Marketplace-agnostic domain (marketplace-recovery)
+    tenancy/      Row schemas/types for the tenant tables
+    auth/         Auth/session/authorization contracts + guards (provider-agnostic)
   integrations/   Marketplace adapters under integrations/<marketplace>/ — empty until later milestones
   recovery/       Deterministic recovery rules (MR-00x) — empty until later milestones
-  lib/            Cross-cutting utilities (env validation boundary, cn helper)
+  lib/            Cross-cutting infrastructure
+    auth/         Provider/store wiring: mock (in-memory) + supabase (live)
+    supabase/     Server-only Supabase client factories
+    db/           Database type for the Supabase client generic
+  middleware.ts   Edge guard redirecting unauthenticated /app/* to /login
 tests/
   unit/           Vitest + React Testing Library
   integration/    Vitest (route/handler-level + RLS against embedded Postgres)

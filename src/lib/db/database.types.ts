@@ -30,6 +30,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["organizations"]["Insert"]>;
+        Relationships: [];
       };
       organization_members: {
         Row: {
@@ -51,6 +52,15 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["organization_members"]["Insert"]
         >;
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey";
+            columns: ["organization_id"];
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+        ];
       };
       marketplace_accounts: {
         Row: {
@@ -78,6 +88,15 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["marketplace_accounts"]["Insert"]
         >;
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_accounts_organization_id_fkey";
+            columns: ["organization_id"];
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+        ];
       };
       audit_events: {
         Row: {
@@ -103,6 +122,15 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["audit_events"]["Insert"]
         >;
+        Relationships: [
+          {
+            foreignKeyName: "audit_events_organization_id_fkey";
+            columns: ["organization_id"];
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+        ];
       };
     };
     Views: Record<string, never>;
