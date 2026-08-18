@@ -90,6 +90,24 @@ Required quality commands ultimately include:
 
 No next milestone begins while a required check is RED.
 
+## Data Layer & Tenancy (established at Milestone 02)
+- **Schema source of truth:** SQL migrations under `supabase/migrations/`. No
+  schema change occurs outside a committed migration.
+- **Tenant boundary:** the `organization`. Tables `organizations`,
+  `organization_members`, `marketplace_accounts` (metadata only),
+  `audit_events` (append-only). UUID PKs, UTC `timestamptz`, FKs, uniqueness
+  constraints, and indexes.
+- **Isolation:** PostgreSQL Row-Level Security on every tenant table, deny
+  cross-organization by default, enforced for the `authenticated` role via
+  `auth.uid()`; `service_role` bypasses RLS for trusted server tasks; `anon`
+  has no tenant-table grant. Full model in `docs/TENANCY.md`.
+- **Typed boundary:** Zod row schemas (`src/core/tenancy/schema.ts`), a
+  `Database` type for the client generic (`src/lib/db/database.types.ts`), and
+  server-only Supabase client factories (`src/lib/supabase/server.ts`) with a
+  server-only env boundary (`src/lib/env.server.ts`).
+- **RLS testing:** migrations run against embedded Postgres (PGlite) with a
+  Supabase auth shim — deterministic, offline, no Docker.
+
 ## Repository Layout (established at Milestone 01)
 ```
 src/
@@ -101,8 +119,11 @@ src/
   lib/            Cross-cutting utilities (env validation boundary, cn helper)
 tests/
   unit/           Vitest + React Testing Library
-  integration/    Vitest (route/handler-level)
+  integration/    Vitest (route/handler-level + RLS against embedded Postgres)
+  db/             Test DB harness + Supabase auth shim (not collected as tests)
   e2e/            Playwright
+supabase/
+  migrations/     SQL migrations — the schema source of truth
 ```
 Brand string `RecoVault` lives only in presentation/config; the package and domain namespace is `marketplace-recovery`.
 
