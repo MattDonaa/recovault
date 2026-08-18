@@ -124,6 +124,23 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Secure Marketplace Connection (established at Milestone 06)
+- **Credential separation:** encrypted secrets live in a dedicated
+  `marketplace_credentials` table (migration 0003), separate from account
+  metadata; the running app's in-memory store likewise holds only ciphertext.
+- **Encryption:** AES-256-GCM (`src/core/security/crypto.ts`), key from env
+  (`MARKETPLACE_ENCRYPTION_KEY`), **never in the DB**, decrypt server-side only,
+  tamper-evident. Plaintext is never stored, returned to the client, logged, or
+  placed in an audit payload.
+- **Access control:** `marketplace_credentials` RLS denies the `authenticated`
+  and `anon` roles entirely (grants revoked + no policy); only trusted server
+  code (service role) touches credentials → cross-tenant access is impossible.
+- **Verification:** a connection reaches `connected` ONLY when a real
+  `adapter.verifyConnection()` returns ok (`src/core/marketplace/verification.ts`).
+  Mock connections verify without a credential; live connections require the
+  stored (decrypted) credential and are never faked. Credential rotation resets
+  verification. Sanitized status/errors.
+
 ## Takealot Adapter (established at Milestone 05)
 - **First real marketplace adapter** (`src/integrations/takealot/`) implementing
   the generic `MarketplaceAdapter` contract over the **verified** Takealot

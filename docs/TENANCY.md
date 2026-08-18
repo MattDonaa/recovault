@@ -15,6 +15,7 @@ authorization and by PostgreSQL Row-Level Security (RLS).
 | `organization_members` | User↔org membership with a role. Unique per (org, user). | `organization_id` |
 | `marketplace_accounts` | **Metadata only** for a connected marketplace (no credentials/secrets). | `organization_id` |
 | `audit_events` | Append-only record of material state transitions. | `organization_id` |
+| `marketplace_credentials` | **Encrypted** marketplace secrets (M06), one per account. RLS denies all client roles; server/service-role only. | `organization_id` |
 
 All primary keys are UUID. All timestamps are `timestamptz` stored in UTC.
 No table, type, or column is named after the brand (`RecoVault`) or a

@@ -1,8 +1,8 @@
 # RecoVault — Project State
 
 ## Current Status
-- **Last GREEN milestone:** 05 — Takealot Adapter (contract-verified)
-- **Current allowed milestone:** 06 — Secure Connection
+- **Last GREEN milestone:** 06 — Secure Marketplace Connection
+- **Current allowed milestone:** 07 — Ingestion & Source Records
 - **Operating mode:** MOCK-FIRST (auth runs in MOCK mode; Supabase + Takealot live paths implemented but unverified)
 - **Live seller credentials:** NOT AVAILABLE
 - **Live marketplace validation:** BLOCKED UNTIL AUTHORIZED SELLER ACCESS EXISTS
@@ -16,6 +16,7 @@
 - **Authentication & authorization (M03):** email/password signup/login/logout via provider-agnostic contracts (`src/core/auth/`), HMAC-signed app session cookie, edge middleware + server-side guards (`requireSession`, `requireOrgAccess`), organization bootstrap/membership resolution, audit on org creation. Mock provider/store for offline/test; Supabase-backed live provider/store implemented (unverified until live milestone). UI shell for auth + organizations (no fabricated data). Model documented in `docs/AUTH.md`.
 - **Marketplace contract & mock adapter (M04):** generic `MarketplaceAdapter` contract, canonical DTOs (money = integer minor units + ISO-4217, UTC), cursor pagination, fail-closed boundary validation (quarantine) in `src/core/marketplace/`; `MockMarketplaceAdapter` + 12 synthetic fixture scenarios with machine-checkable manifests in `src/integrations/mock/`. MOCK demo-marketplace connection UI (metadata only, not persisted). No marketplace-specific type leaks into core (test-enforced). Catalog in `docs/FIXTURES.md`.
 - **Takealot adapter (M05):** first real adapter in `src/integrations/takealot/` — verified against the official Takealot Marketplace API (OpenAPI 3.1.1; provenance in `docs/TAKEALOT_API.md`). X-API-Key transport (server-only, redacted), continuation-token pagination, ZAR→minor-units money, Zod schemas from verified fields (fail-closed), deterministic mapping to canonical DTOs, date-window splitter. All tests network-free (injected fetch); live calls deferred to live pilot.
+- **Secure marketplace connection (M06):** AES-256-GCM credential encryption (`src/core/security/crypto.ts`, env key, never in DB, server-only decrypt); `marketplace_credentials` table (migration 0003) with RLS denying all client roles; connection/verification services where `connected` is reached only via a real `adapter.verifyConnection()` (never faked); MOCK verifies without a credential; LIVE stores encrypted key and stays unverified until a real check; credential rotation; sanitized status. Plaintext never stored/returned/logged/audited.
 - **Health route:** `GET /health` returns non-sensitive status.
 - **Quality gate:** typecheck, lint, unit (Vitest 4 + RTL), integration (Vitest + PGlite), e2e (Playwright), build, and aggregate `check` scripts.
 - **Module skeleton (empty until later milestones):** `src/integrations`, `src/recovery`.
@@ -31,7 +32,7 @@ Planned, but not implemented until their milestone is GREEN:
 - MR-003 — Stock-Loss Event Without Matching Recovery
 
 ## Database State
-- **Schema migration version:** 0002 (`0001_tenancy_core.sql`, `0002_tenancy_rls.sql`)
+- **Schema migration version:** 0003 (`0001_tenancy_core.sql`, `0002_tenancy_rls.sql`, `0003_marketplace_credentials.sql`)
 - **Supabase schema:** DEFINED via migrations (not yet applied to a live project)
 - **RLS:** ENABLED + tested on all tenant tables (deny cross-tenant by default)
 
@@ -56,16 +57,16 @@ Planned, but not implemented until their milestone is GREEN:
 - **Dependency audit:** 3 transitive HIGH advisories remain (`postcss` and `sharp`, both pulled in by Next.js). Their only fix is a Next.js 16 major upgrade, which removes `next lint` and would force an ESLint-flat-config migration. Both are build-time-only and non-exploitable in the current surface (`postcss` processes only our own trusted CSS; `sharp` runs only under `next/image` optimization, which is unused). Next.js is pinned to the patched **15.5.23** (direct CVE-2025-66478 resolved). The Next.js 16 migration is deferred to a dedicated, human-approved upgrade task.
 
 ## Current Development Permission
-Milestone 05 is GREEN. Claude Code may execute **Milestone 06 ONLY** once explicitly instructed.
+Milestone 06 is GREEN. Claude Code may execute **Milestone 07 ONLY** once explicitly instructed.
 
-It must not begin Milestone 07 or later until Milestone 06 passes every mandatory GREEN gate and this document is updated.
+It must not begin Milestone 08 or later until Milestone 07 passes every mandatory GREEN gate and this document is updated.
 
 ## Next Allowed Action
-Await explicit human instruction to begin Milestone 06. Then read, in order:
+Await explicit human instruction to begin Milestone 07. Then read, in order:
 1. `00-claude.md`
 2. `docs/PROJECT_STATE.md`
 3. `docs/ARCHITECTURE.md`
-4. `milestones/06-secure-connection.md`
+4. `milestones/07-ingestion-source-records.md`
 
 Run the prior verification commands (`npm run check`, `npm run test:e2e`) before starting Milestone 04.
 
