@@ -29,6 +29,7 @@ describe("tenancy migrations", () => {
       "audit_events",
       "marketplace_accounts",
       "marketplace_credentials",
+      "marketplace_events",
       "organization_members",
       "organizations",
       "source_record_rejections",

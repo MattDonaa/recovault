@@ -124,6 +124,19 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Normalized Marketplace Ledger (established at Milestone 08)
+- **`marketplace_events`** (migration 0005): append-oriented, marketplace-
+  independent event ledger derived deterministically from source records.
+  LEDGER LAW columns incl. exact money (`amount_minor` bigint integer minor
+  units), `source_record_id` (traceability), normalizer version, and a
+  deterministic `event_key` unique per account. Tenant-isolated by RLS.
+- **Normalizers** (`src/core/ledger/`, marketplace-agnostic): sales → `sale`,
+  shipments → `shipment_item`, returns → `return`, transactions → `payment`/
+  `charge`/`reversal`/`adjustment` (canonical source enum → canonical event
+  type). Deterministic; idempotent insert (`ON CONFLICT DO NOTHING`);
+  rebuild-from-source for dev/test. The recovery core consumes these events with
+  no Takealot DTOs. Model in `docs/LEDGER.md`.
+
 ## Ingestion & Source Records (established at Milestone 07)
 - **Persistence** (migration 0004): `sync_jobs`, `source_records`,
   `source_record_rejections`, `sync_checkpoints` — all tenant-isolated by RLS
