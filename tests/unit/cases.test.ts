@@ -73,6 +73,10 @@ class FakeCaseStore implements CaseStore {
       ruleId: input.ruleId,
       ruleVersion: input.ruleVersion,
       createdAt: new Date().toISOString(),
+      externalReference: null,
+      submittedAt: null,
+      submissionDeadlineAt: null,
+      disputeSlaDeadlineAt: null,
     };
     this.cases.push(rec);
     return { case: rec, created: true };
@@ -89,6 +93,23 @@ class FakeCaseStore implements CaseStore {
   async updateCaseStatus(caseId: string, to: CaseRecord["status"]): Promise<void> {
     const c = this.cases.find((x) => x.id === caseId);
     if (c) c.status = to;
+  }
+  async applyClaimSubmission(
+    caseId: string,
+    fields: {
+      externalReference: string;
+      submittedAt: string;
+      submissionDeadlineAt: string;
+      disputeSlaDeadlineAt: string;
+    },
+  ): Promise<void> {
+    const c = this.cases.find((x) => x.id === caseId);
+    if (!c) return;
+    c.status = "submitted";
+    c.externalReference = fields.externalReference;
+    c.submittedAt = fields.submittedAt;
+    c.submissionDeadlineAt = fields.submissionDeadlineAt;
+    c.disputeSlaDeadlineAt = fields.disputeSlaDeadlineAt;
   }
   async listCases(): Promise<CaseRecord[]> {
     return this.cases;

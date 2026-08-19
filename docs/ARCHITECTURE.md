@@ -124,6 +124,21 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Evidence Pack & Manual Claim Tracking (established at Milestone 12)
+- **Deterministic evidence pack** (`src/core/evidence/`): a pure snapshot built
+  only from persisted case/candidate/source data (exact minor-unit money, no
+  LLM, non-guarantee disclaimer). Server-generated **PDF** via `pdf-lib`
+  (offline) at `GET /app/org/[orgId]/cases/[caseId]/evidence` (member-only, 404
+  cross-tenant).
+- **Manual claim tracking** (migration 0008 adds claim columns to `cases`):
+  `submitCase` requires an external reference + submission date, records a
+  `submitted` audit event, and sets **two separate deadline clocks** —
+  submission (anchored on discovery) and dispute SLA (anchored on submission),
+  computed by distinct functions so they cannot be conflated
+  (`src/core/claims/`).
+- **No auto-submission anywhere** (source-scan test enforced). Model in
+  `docs/EVIDENCE_CLAIMS.md`.
+
 ## Case Engine & Audit Trail (established at Milestone 11)
 - **`cases`, `case_events`, `case_evidence_refs`** (migration 0007): a case per
   accepted candidate (`unique(recovery_candidate_id)` → idempotent), append-only

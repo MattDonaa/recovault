@@ -22,6 +22,10 @@ interface CaseRow {
   rule_id: string;
   rule_version: string;
   created_at: string;
+  external_reference: string | null;
+  submitted_at: string | null;
+  submission_deadline_at: string | null;
+  dispute_sla_deadline_at: string | null;
 }
 
 function toCase(r: CaseRow): CaseRecord {
@@ -38,11 +42,16 @@ function toCase(r: CaseRow): CaseRecord {
     ruleId: r.rule_id,
     ruleVersion: r.rule_version,
     createdAt: String(r.created_at),
+    externalReference: r.external_reference,
+    submittedAt: r.submitted_at === null ? null : String(r.submitted_at),
+    submissionDeadlineAt: r.submission_deadline_at === null ? null : String(r.submission_deadline_at),
+    disputeSlaDeadlineAt: r.dispute_sla_deadline_at === null ? null : String(r.dispute_sla_deadline_at),
   };
 }
 
 const CASE_COLUMNS = `id, organization_id, marketplace_account_id, recovery_candidate_id,
-  status, title, summary, potential_recovery_minor, currency, rule_id, rule_version, created_at`;
+  status, title, summary, potential_recovery_minor, currency, rule_id, rule_version, created_at,
+  external_reference, submitted_at, submission_deadline_at, dispute_sla_deadline_at`;
 
 export function createSqlCaseStore(exec: SqlExec): CaseStore {
   return {
@@ -168,6 +177,25 @@ export function createSqlCaseStore(exec: SqlExec): CaseStore {
       await exec.query(
         `update public.cases set status = $2::public.case_status where id = $1`,
         [caseId, to],
+      );
+    },
+
+    async applyClaimSubmission(caseId, fields): Promise<void> {
+      await exec.query(
+        `update public.cases set
+           status = 'submitted',
+           external_reference = $2,
+           submitted_at = $3::timestamptz,
+           submission_deadline_at = $4::timestamptz,
+           dispute_sla_deadline_at = $5::timestamptz
+         where id = $1`,
+        [
+          caseId,
+          fields.externalReference,
+          fields.submittedAt,
+          fields.submissionDeadlineAt,
+          fields.disputeSlaDeadlineAt,
+        ],
       );
     },
 

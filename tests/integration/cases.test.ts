@@ -6,6 +6,7 @@ import { normalizeAccount } from "@/core/ledger/engine";
 import { createCaseFromCandidate, transitionCase } from "@/core/cases/engine";
 import { CandidateNotAcceptedError } from "@/core/cases/types";
 import { InvalidCaseTransitionError } from "@/core/cases/status";
+import { submitCase } from "@/core/claims/submit";
 import { runRecovery } from "@/core/recovery/engine";
 import { MockMarketplaceAdapter } from "@/integrations/mock/adapter";
 import { getScenario } from "@/integrations/mock/fixtures";
@@ -151,6 +152,48 @@ describe("case engine (DB) — transitions, audit, evidence, isolation", () => {
         transitionCase(createSqlCaseStore(tx as unknown as SqlExec), { caseId: c.id, to: "payment_expected", actorUserId: owner }),
       ),
     ).rejects.toBeInstanceOf(InvalidCaseTransitionError);
+  });
+
+  it("tracks a manual claim submission with separate deadlines and an audit event", async () => {
+    const { org, account } = await newAccount();
+    const candidateId = await pipelineCandidate("stock-loss-unpaid", org, account);
+    await accept(candidateId);
+    const c = await createCase(candidateId);
+
+    // draft → evidence_ready, then submit the claim.
+    await db.asService(async (tx) =>
+      transitionCase(createSqlCaseStore(tx as unknown as SqlExec), { caseId: c.id, to: "evidence_ready", actorUserId: owner }),
+    );
+    await db.asService(async (tx) =>
+      submitCase(createSqlCaseStore(tx as unknown as SqlExec), {
+        caseId: c.id,
+        externalReference: "TAK-9999",
+        submittedAt: "2026-01-10T00:00:00.000Z",
+        actorUserId: owner,
+      }),
+    );
+
+    const row = await db.raw.query<{
+      status: string;
+      external_reference: string;
+      submitted_at: string;
+      submission_deadline_at: string;
+      dispute_sla_deadline_at: string;
+    }>(
+      `select status, external_reference, submitted_at, submission_deadline_at, dispute_sla_deadline_at
+       from public.cases where id = $1`,
+      [c.id],
+    );
+    expect(row.rows[0]!.status).toBe("submitted");
+    expect(row.rows[0]!.external_reference).toBe("TAK-9999");
+    // Separate clocks: submission deadline (created+30d) ≠ dispute SLA (submitted+14d).
+    expect(row.rows[0]!.submission_deadline_at).not.toBe(row.rows[0]!.dispute_sla_deadline_at);
+
+    const submitted = await db.raw.query<{ n: number }>(
+      `select count(*)::int n from public.case_events where case_id = $1 and to_status = 'submitted'`,
+      [c.id],
+    );
+    expect(Number(submitted.rows[0]!.n)).toBe(1);
   });
 
   it("keeps candidate evidence traceable through the case", async () => {

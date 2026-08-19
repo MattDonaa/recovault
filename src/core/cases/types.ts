@@ -33,6 +33,18 @@ export interface CaseRecord {
   ruleId: string;
   ruleVersion: string;
   createdAt: string;
+  // Manual claim tracking (set at submission).
+  externalReference: string | null;
+  submittedAt: string | null;
+  submissionDeadlineAt: string | null;
+  disputeSlaDeadlineAt: string | null;
+}
+
+export interface ClaimSubmissionFields {
+  externalReference: string;
+  submittedAt: string;
+  submissionDeadlineAt: string;
+  disputeSlaDeadlineAt: string;
 }
 
 export interface CreateCaseInput {
@@ -77,6 +89,8 @@ export interface CaseStore {
   addCaseEvent(event: CaseEventInput): Promise<void>;
   getCase(caseId: string): Promise<CaseRecord | null>;
   updateCaseStatus(caseId: string, to: CaseStatus): Promise<void>;
+  /** Mark the case submitted and persist the claim tracking fields atomically. */
+  applyClaimSubmission(caseId: string, fields: ClaimSubmissionFields): Promise<void>;
   listCases(organizationId: string): Promise<CaseRecord[]>;
 }
 

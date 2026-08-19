@@ -103,6 +103,10 @@ export function createInMemoryCaseStore(): CaseStore {
         ruleId: input.ruleId,
         ruleVersion: input.ruleVersion,
         createdAt: new Date().toISOString(),
+        externalReference: null,
+        submittedAt: null,
+        submissionDeadlineAt: null,
+        disputeSlaDeadlineAt: null,
       };
       store().cases.push(record);
       return { case: record, created: true };
@@ -133,6 +137,16 @@ export function createInMemoryCaseStore(): CaseStore {
     async updateCaseStatus(caseId: string, to: CaseStatus): Promise<void> {
       const c = store().cases.find((x) => x.id === caseId);
       if (c) c.status = to;
+    },
+
+    async applyClaimSubmission(caseId, fields): Promise<void> {
+      const c = store().cases.find((x) => x.id === caseId);
+      if (!c) return;
+      c.status = "submitted";
+      c.externalReference = fields.externalReference;
+      c.submittedAt = fields.submittedAt;
+      c.submissionDeadlineAt = fields.submissionDeadlineAt;
+      c.disputeSlaDeadlineAt = fields.disputeSlaDeadlineAt;
     },
 
     async listCases(organizationId: string): Promise<CaseRecord[]> {

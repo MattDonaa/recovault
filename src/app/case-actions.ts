@@ -10,6 +10,7 @@ import { assertRole } from "@/core/auth/authorization";
 import { requireOrgAccess } from "@/core/auth/guards";
 import { createCaseFromCandidate, transitionCase } from "@/core/cases/engine";
 import { CASE_STATUSES, type CaseStatus } from "@/core/cases/status";
+import { submitCase } from "@/core/claims/submit";
 import { createInMemoryCaseStore } from "@/lib/cases/memory-store";
 
 async function requireManage(organizationId: string) {
@@ -57,4 +58,31 @@ export async function transitionCaseAction(formData: FormData): Promise<void> {
   });
   revalidatePath(`/app/org/${organizationId}/cases/${caseId}`);
   revalidatePath(`/app/org/${organizationId}/cases`);
+}
+
+/**
+ * Mark a case as submitted to the marketplace (manual). Requires an external
+ * reference and a submission date; records a submitted audit event and sets the
+ * separate deadline clocks. Nothing is sent to the marketplace on the seller's
+ * behalf — this only records the seller's own manual submission.
+ */
+export async function submitClaimAction(formData: FormData): Promise<void> {
+  const organizationId = String(formData.get("organizationId") ?? "");
+  const caseId = String(formData.get("caseId") ?? "");
+  const externalReference = String(formData.get("externalReference") ?? "");
+  const submittedAt = String(formData.get("submittedAt") ?? "");
+  const user = await requireManage(organizationId);
+
+  const store = createInMemoryCaseStore();
+  const existing = await store.getCase(caseId);
+  if (!existing || existing.organizationId !== organizationId) notFound();
+
+  await submitCase(store, {
+    caseId,
+    externalReference,
+    submittedAt,
+    actorUserId: user.id,
+    correlationId: randomUUID(),
+  });
+  revalidatePath(`/app/org/${organizationId}/cases/${caseId}`);
 }
