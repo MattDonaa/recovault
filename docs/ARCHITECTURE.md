@@ -124,6 +124,21 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Deterministic Recovery Engine (established at Milestone 09)
+- **Rules** (`src/core/recovery/`, marketplace-agnostic): versioned MR-001
+  (inbound shipment discrepancy), MR-002 (return outcome/financial mismatch),
+  MR-003 (stock-loss without matching recovery). Pure, deterministic detectors
+  over canonical ledger events; documented required-evidence, disqualifiers,
+  scoring, thresholds, and explanation. No LLM in money/anomaly/eligibility.
+- **Persistence** (migration 0006): `recovery_candidates` (rule + version,
+  status `detected`, confidence band + score, exact `potential_recovery_minor`
+  bigint, calculation inputs, deterministic candidate key) and
+  `recovery_candidate_evidence` (candidate → `marketplace_events`) for full
+  source→ledger→rule→calculation traceability. Tenant-isolated by RLS.
+- **Engine:** idempotent candidate insertion (`ON CONFLICT DO NOTHING`) +
+  evidence linking; rebuild support. Proven on PGlite; outputs match the fixture
+  manifests exactly (healthy → zero). Rules documented in `docs/RECOVERY_RULES.md`.
+
 ## Normalized Marketplace Ledger (established at Milestone 08)
 - **`marketplace_events`** (migration 0005): append-oriented, marketplace-
   independent event ledger derived deterministically from source records.

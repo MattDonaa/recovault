@@ -18,6 +18,7 @@ authorization and by PostgreSQL Row-Level Security (RLS).
 | `marketplace_credentials` | **Encrypted** marketplace secrets (M06), one per account. RLS denies all client roles; server/service-role only. | `organization_id` |
 | `sync_jobs`, `source_records`, `source_record_rejections`, `sync_checkpoints` | Ingestion + provenance (M07). Members read their org's rows; writes server/service-role. | `organization_id` |
 | `marketplace_events` | Normalized ledger (M08). Members read their org's events; writes server/service-role. | `organization_id` |
+| `recovery_candidates`, `recovery_candidate_evidence` | Recovery candidates + evidence links (M09). Members read their org's rows; writes server/service-role. | `organization_id` |
 
 All primary keys are UUID. All timestamps are `timestamptz` stored in UTC.
 No table, type, or column is named after the brand (`RecoVault`) or a
