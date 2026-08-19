@@ -98,6 +98,11 @@ export function listOrgCandidates(organizationId: string): StoredCandidate[] {
   return store().candidates.filter((c) => c.organizationId === organizationId);
 }
 
+/** Find a stored candidate by id (any org). Authorization is done by callers. */
+export function findStoredCandidate(candidateId: string): StoredCandidate | null {
+  return store().candidates.find((c) => c.id === candidateId) ?? null;
+}
+
 export interface CandidateFilter {
   rule?: string;
   confidence?: string;

@@ -1,8 +1,8 @@
 # RecoVault — Project State
 
 ## Current Status
-- **Last GREEN milestone:** 10 — Money Finder
-- **Current allowed milestone:** 11 — Case Engine
+- **Last GREEN milestone:** 11 — Case Engine & Audit Trail
+- **Current allowed milestone:** 12 — Evidence & Claim Tracking
 - **Operating mode:** MOCK-FIRST (auth runs in MOCK mode; Supabase + Takealot live paths implemented but unverified)
 - **Live seller credentials:** NOT AVAILABLE
 - **Live marketplace validation:** BLOCKED UNTIL AUTHORIZED SELLER ACCESS EXISTS
@@ -30,7 +30,7 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **MR-003:v1** — Stock-Loss Event Without Matching Recovery (HIGH; reversal-aware)
 
 ## Database State
-- **Schema migration version:** 0006 (`0001`–`0005` + `0006_recovery_candidates.sql`)
+- **Schema migration version:** 0007 (`0001`–`0006` + `0007_cases.sql`)
 - **Supabase schema:** DEFINED via migrations (not yet applied to a live project)
 - **RLS:** ENABLED + tested on all tenant tables (deny cross-tenant by default)
 
@@ -43,7 +43,8 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - Marketplace Ledger: IMPLEMENTED (M08) — deterministic normalizers, append-only idempotent events, source traceability, exact money
 - Recovery Engine: IMPLEMENTED (M09) — MR-001/002/003 deterministic detectors, explainable candidates, idempotent
 - Money Finder: IMPLEMENTED (M10) — cockpit UI (totals/list/filters/detail/evidence), candidate workflow, brand applied
-- Case Engine: NOT IMPLEMENTED — target Milestone 11 (NEXT ALLOWED)
+- Case Engine: IMPLEMENTED (M11) — case state machine, idempotent creation, append-only audit, evidence traceability
+- Evidence & Claim Tracking: NOT IMPLEMENTED — target Milestone 12 (NEXT ALLOWED)
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11
@@ -60,16 +61,16 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **Dependency audit:** 3 transitive HIGH advisories remain (`postcss` and `sharp`, both pulled in by Next.js). Their only fix is a Next.js 16 major upgrade, which removes `next lint` and would force an ESLint-flat-config migration. Both are build-time-only and non-exploitable in the current surface (`postcss` processes only our own trusted CSS; `sharp` runs only under `next/image` optimization, which is unused). Next.js is pinned to the patched **15.5.23** (direct CVE-2025-66478 resolved). The Next.js 16 migration is deferred to a dedicated, human-approved upgrade task.
 
 ## Current Development Permission
-Milestone 10 is GREEN. Claude Code may execute **Milestone 11 ONLY** once explicitly instructed.
+Milestone 11 is GREEN. Claude Code may execute **Milestone 12 ONLY** once explicitly instructed.
 
-It must not begin Milestone 12 or later until Milestone 11 passes every mandatory GREEN gate and this document is updated.
+It must not begin Milestone 13 or later until Milestone 12 passes every mandatory GREEN gate and this document is updated.
 
 ## Next Allowed Action
-Await explicit human instruction to begin Milestone 11. Then read, in order:
+Await explicit human instruction to begin Milestone 12. Then read, in order:
 1. `00-claude.md`
 2. `docs/PROJECT_STATE.md`
 3. `docs/ARCHITECTURE.md`
-4. `milestones/11-case-engine.md`
+4. `milestones/12-evidence-claim-tracking.md`
 
 Run the prior verification commands (`npm run check`, `npm run test:e2e`) before starting Milestone 04.
 

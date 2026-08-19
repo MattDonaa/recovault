@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createCaseAction } from "@/app/case-actions";
+import { Button } from "@/components/ui/button";
+import { findCaseByCandidateId } from "@/lib/cases/memory-store";
 import { MockBanner } from "@/components/marketplace/mock-banner";
 import { ConfidenceBadge, StatusBadge } from "@/components/recovery/badges";
 import { TransitionButtons } from "@/components/recovery/transition-buttons";
@@ -27,6 +30,7 @@ export default async function CandidateDetailPage({
   const found = getCandidate(orgId, candidateId);
   if (!found) notFound();
   const { candidate, evidence } = found;
+  const existingCase = findCaseByCandidateId(candidate.id);
 
   return (
     <div className="space-y-6">
@@ -85,6 +89,38 @@ export default async function CandidateDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Recovery case</CardTitle>
+          <CardDescription>
+            Turn an accepted candidate into a controlled, auditable recovery case.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {existingCase ? (
+            <Link
+              href={`/app/org/${orgId}/cases/${existingCase.id}`}
+              className="text-sm font-medium text-primary underline"
+              data-testid="view-case"
+            >
+              View recovery case ({existingCase.status}) →
+            </Link>
+          ) : candidate.status === "accepted" ? (
+            <form action={createCaseAction}>
+              <input type="hidden" name="organizationId" value={orgId} />
+              <input type="hidden" name="candidateId" value={candidate.id} />
+              <Button type="submit" size="sm" data-testid="create-case">
+                Create recovery case
+              </Button>
+            </form>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Accept this candidate first to create a recovery case.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

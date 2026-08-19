@@ -27,6 +27,9 @@ describe("tenancy migrations", () => {
     );
     expect(tables).toEqual([
       "audit_events",
+      "case_events",
+      "case_evidence_refs",
+      "cases",
       "marketplace_accounts",
       "marketplace_credentials",
       "marketplace_events",

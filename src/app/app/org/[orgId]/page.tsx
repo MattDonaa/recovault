@@ -39,12 +39,20 @@ export default async function OrganizationPage({
         <p className="text-sm text-muted-foreground">
           {membership.slug} · your role: {membership.role}
         </p>
-        <Link
-          href={`/app/org/${orgId}/money-finder`}
-          className="inline-block text-sm font-medium text-primary underline"
-        >
-          Open Money Finder →
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            href={`/app/org/${orgId}/money-finder`}
+            className="text-sm font-medium text-primary underline"
+          >
+            Open Money Finder →
+          </Link>
+          <Link
+            href={`/app/org/${orgId}/cases`}
+            className="text-sm font-medium text-primary underline"
+          >
+            Recovery cases →
+          </Link>
+        </div>
       </div>
 
       <Card>

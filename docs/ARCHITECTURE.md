@@ -124,6 +124,19 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Case Engine & Audit Trail (established at Milestone 11)
+- **`cases`, `case_events`, `case_evidence_refs`** (migration 0007): a case per
+  accepted candidate (`unique(recovery_candidate_id)` → idempotent), append-only
+  audit trail (actor/timestamp/from/to/reason/correlation), and carried-over
+  evidence refs. Tenant-isolated by RLS.
+- **State machine** (`src/core/cases/`): `draft → evidence_ready → submitted →
+  under_review → accepted | disputed → payment_expected → recovered | closed`;
+  explicit transitions, invalid ones fail server-side.
+- **Engine:** `createCaseFromCandidate` (accepted-only, idempotent, copies
+  evidence, audits creation) + `transitionCase` (validated, audits every
+  material change). SQL store (PGlite-verified) + in-memory store (app). UI to
+  create/advance cases with audit + evidence. Model in `docs/CASES.md`.
+
 ## Money Finder & Brand (established at Milestone 10)
 - **Money Finder** (`src/app/app/org/[orgId]/money-finder/`): overview
   potential-recovery totals (exact minor units), candidate list with filters
