@@ -124,6 +124,22 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Recovery Verification & Production Readiness (established at Milestone 13)
+- **Recovery matching** (migration 0009 `recovery_records`): deterministic
+  matcher (`src/core/recovery/matching.ts`) — canonical-identifier match,
+  reversal-aware, ambiguous → review-required (never silently closed), unmatched
+  stays unmatched. A valid match closes a `payment_expected` case to `recovered`
+  and rolls up a recovered total (green = verified). SQL + in-memory stores.
+  Model in `docs/RECOVERY_MATCHING.md`.
+- **Hardening:** security response headers (`next.config.mjs`), sanitized
+  app error boundaries (`error.tsx`/`global-error.tsx`), sanitized structured
+  logging + Sentry-ready capture boundary (`src/lib/observability`), and
+  production env validation (`validateProductionEnv`).
+- **Mock-validated MVP:** the full loop (connect → sync → ledger → detect →
+  Money Finder → accept → case → evidence → submit → match → recovered) runs on
+  synthetic data with clear MOCK/DEMO labelling and no live-Takealot claim.
+  Runbook: `README.md`, `docs/DEPLOYMENT.md`.
+
 ## Evidence Pack & Manual Claim Tracking (established at Milestone 12)
 - **Deterministic evidence pack** (`src/core/evidence/`): a pure snapshot built
   only from persisted case/candidate/source data (exact minor-unit money, no

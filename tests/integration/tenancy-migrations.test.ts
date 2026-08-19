@@ -37,6 +37,7 @@ describe("tenancy migrations", () => {
       "organizations",
       "recovery_candidate_evidence",
       "recovery_candidates",
+      "recovery_records",
       "source_record_rejections",
       "source_records",
       "sync_checkpoints",

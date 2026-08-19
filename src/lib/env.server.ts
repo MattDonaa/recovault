@@ -34,3 +34,34 @@ export function getServerEnv(
 
   return parsed.data;
 }
+
+/**
+ * The environment variables a real production deployment MUST provide. Used by
+ * the production readiness check (and documented in the deployment runbook).
+ */
+export const REQUIRED_PRODUCTION_ENV = [
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "AUTH_SESSION_SECRET",
+  "MARKETPLACE_ENCRYPTION_KEY",
+] as const;
+
+/**
+ * Assert all required production env vars are present. Not invoked at build
+ * time (mock-first builds run without them); call at server startup in a real
+ * production deployment. Fails closed with the list of what is missing.
+ */
+export function validateProductionEnv(
+  source: Record<string, string | undefined> = process.env,
+): void {
+  const missing = REQUIRED_PRODUCTION_ENV.filter((key) => {
+    const value = source[key];
+    return !value || value.trim().length === 0;
+  });
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required production environment variables: ${missing.join(", ")}`,
+    );
+  }
+}

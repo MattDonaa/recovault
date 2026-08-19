@@ -1,8 +1,9 @@
 # RecoVault — Project State
 
 ## Current Status
-- **Last GREEN milestone:** 12 — Evidence Pack & Manual Claim Tracking
-- **Current allowed milestone:** 13 — Recovery Verification & Production Readiness
+- **Last GREEN milestone:** 13 — Recovery Verification & Mock-Validated MVP
+- **MVP status:** COMPLETE (mock-validated). Milestones 01–13 GREEN.
+- **Current allowed milestone:** 14 — Live Seller Pilot, but **BLOCKED** until authorized real seller credentials/permission exist.
 - **Operating mode:** MOCK-FIRST (auth runs in MOCK mode; Supabase + Takealot live paths implemented but unverified)
 - **Live seller credentials:** NOT AVAILABLE
 - **Live marketplace validation:** BLOCKED UNTIL AUTHORIZED SELLER ACCESS EXISTS
@@ -30,7 +31,7 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **MR-003:v1** — Stock-Loss Event Without Matching Recovery (HIGH; reversal-aware)
 
 ## Database State
-- **Schema migration version:** 0008 (`0001`–`0007` + `0008_claim_tracking.sql`)
+- **Schema migration version:** 0009 (`0001`–`0008` + `0009_recovery_records.sql`)
 - **Supabase schema:** DEFINED via migrations (not yet applied to a live project)
 - **RLS:** ENABLED + tested on all tenant tables (deny cross-tenant by default)
 
@@ -45,7 +46,7 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - Money Finder: IMPLEMENTED (M10) — cockpit UI (totals/list/filters/detail/evidence), candidate workflow, brand applied
 - Case Engine: IMPLEMENTED (M11) — case state machine, idempotent creation, append-only audit, evidence traceability
 - Evidence & Claim Tracking: IMPLEMENTED (M12) — deterministic evidence pack + PDF, manual claim submission, separate deadline clocks, no auto-submission
-- Recovery Verification: NOT IMPLEMENTED — target Milestone 13 (NEXT ALLOWED)
+- Recovery Verification & Production Readiness: IMPLEMENTED (M13) — deterministic recovery matching, reversal-aware, recovered totals, hardening (security headers, error boundaries, sanitized logging, prod env validation), clean-clone runbook
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11
@@ -62,16 +63,17 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **Dependency audit:** 3 transitive HIGH advisories remain (`postcss` and `sharp`, both pulled in by Next.js). Their only fix is a Next.js 16 major upgrade, which removes `next lint` and would force an ESLint-flat-config migration. Both are build-time-only and non-exploitable in the current surface (`postcss` processes only our own trusted CSS; `sharp` runs only under `next/image` optimization, which is unused). Next.js is pinned to the patched **15.5.23** (direct CVE-2025-66478 resolved). The Next.js 16 migration is deferred to a dedicated, human-approved upgrade task.
 
 ## Current Development Permission
-Milestone 12 is GREEN. Claude Code may execute **Milestone 13 ONLY** once explicitly instructed.
+Milestone 13 is GREEN — the mock-validated MVP (Milestones 01–13) is complete.
 
-It must not begin Milestone 14 or later until Milestone 13 passes every mandatory GREEN gate and this document is updated.
+Milestone 14 (Live Seller Pilot) is **BLOCKED**: it requires a consenting real
+seller / authorized Takealot API key, which does not exist yet. Do not begin
+Milestone 14 until such access is provided AND explicitly authorized. The absence
+of a seller does not diminish the completed mock-validated MVP.
 
 ## Next Allowed Action
-Await explicit human instruction to begin Milestone 13. Then read, in order:
-1. `00-claude.md`
-2. `docs/PROJECT_STATE.md`
-3. `docs/ARCHITECTURE.md`
-4. `milestones/13-recovery-verification-production.md`
+Await either (a) explicit human instruction plus real-seller credentials to
+begin the Milestone 14 live pilot, or (b) a separate authorized task (e.g. the
+deferred Next.js 16 dependency upgrade, or a commercial visual-polish gate).
 
 Run the prior verification commands (`npm run check`, `npm run test:e2e`) before starting Milestone 04.
 

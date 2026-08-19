@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { submitClaimAction } from "@/app/case-actions";
+import { recordRecoveryAction, submitClaimAction } from "@/app/case-actions";
 import { CaseTransitionButtons } from "@/components/cases/case-transition-buttons";
 import { MockBanner } from "@/components/marketplace/mock-banner";
 import { Button } from "@/components/ui/button";
@@ -83,8 +83,22 @@ export default async function CaseDetailPage({
             <CardTitle className="text-base">Advance case</CardTitle>
             <CardDescription>Transitions are validated and audited.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <CaseTransitionButtons organizationId={orgId} caseId={record.id} status={record.status} />
+            {record.status === "payment_expected" ? (
+              <form action={recordRecoveryAction}>
+                <input type="hidden" name="organizationId" value={orgId} />
+                <input type="hidden" name="caseId" value={record.id} />
+                <Button type="submit" size="sm" variant="outline" data-testid="record-recovery">
+                  Record incoming recovery (demo)
+                </Button>
+              </form>
+            ) : null}
+            {record.status === "recovered" ? (
+              <p className="text-sm font-medium text-success" data-testid="recovered-note">
+                Recovery verified and matched. This case is recovered.
+              </p>
+            ) : null}
           </CardContent>
         </Card>
       </div>

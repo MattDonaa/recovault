@@ -103,6 +103,17 @@ export function findStoredCandidate(candidateId: string): StoredCandidate | null
   return store().candidates.find((c) => c.id === candidateId) ?? null;
 }
 
+/** The ledger events analyzed for an account (used by recovery matching). */
+export function getAccountEvents(accountId: string): LedgerEvent[] {
+  return store().events[accountId] ?? [];
+}
+
+/** Append additional ledger events for an account (e.g. an ingested recovery). */
+export function appendAccountEvents(accountId: string, events: LedgerEvent[]): void {
+  const s = store();
+  s.events[accountId] = [...(s.events[accountId] ?? []), ...events];
+}
+
 export interface CandidateFilter {
   rule?: string;
   confidence?: string;

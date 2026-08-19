@@ -20,6 +20,7 @@ authorization and by PostgreSQL Row-Level Security (RLS).
 | `marketplace_events` | Normalized ledger (M08). Members read their org's events; writes server/service-role. | `organization_id` |
 | `recovery_candidates`, `recovery_candidate_evidence` | Recovery candidates + evidence links (M09). Members read their org's rows; writes server/service-role. | `organization_id` |
 | `cases`, `case_events`, `case_evidence_refs` | Recovery cases + audit + evidence (M11). Members read their org's rows; writes server/service-role. | `organization_id` |
+| `recovery_records` | Recovery/payment match records (M13). Members read their org's rows; writes server/service-role. | `organization_id` |
 
 All primary keys are UUID. All timestamps are `timestamptz` stored in UTC.
 No table, type, or column is named after the brand (`RecoVault`) or a

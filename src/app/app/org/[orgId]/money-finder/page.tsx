@@ -18,6 +18,7 @@ import {
   filterCandidates,
   listOrgCandidates,
 } from "@/lib/marketplace/money-finder-store";
+import { recoveredTotalMinor } from "@/lib/recovery/memory-recovery";
 
 const RULES = ["MR-001", "MR-002", "MR-003"];
 const CONFIDENCES = ["HIGH", "MEDIUM", "LOW"];
@@ -42,6 +43,7 @@ export default async function MoneyFinderPage({
   const all = listOrgCandidates(orgId);
   const totals = computeTotals(all); // totals reflect ALL candidates
   const filtered = filterCandidates(all, filter);
+  const recoveredMinor = recoveredTotalMinor(orgId);
 
   return (
     <div className="space-y-6">
@@ -91,13 +93,16 @@ export default async function MoneyFinderPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Requires review</CardDescription>
+            <CardDescription>Recovered (verified)</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold tabular-nums">
-              {totals.byStatus.detected + totals.byStatus.investigating}
+            <p
+              data-testid="total-recovered"
+              className="font-display text-3xl font-bold tabular-nums text-success"
+            >
+              {formatMoneyMinor(recoveredMinor, totals.currency ?? "ZAR")}
             </p>
-            <p className="text-xs text-muted-foreground">Detected or investigating.</p>
+            <p className="text-xs text-muted-foreground">Matched to a payment.</p>
           </CardContent>
         </Card>
       </div>

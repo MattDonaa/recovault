@@ -60,6 +60,10 @@ export function listOrgCases(organizationId: string): CaseRecord[] {
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+export function listCasesByAccount(accountId: string): CaseRecord[] {
+  return store().cases.filter((c) => c.marketplaceAccountId === accountId);
+}
+
 /** In-memory CaseStore (MOCK-FIRST app path). */
 export function createInMemoryCaseStore(): CaseStore {
   return {
