@@ -15,12 +15,32 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-manrope)", "var(--font-inter)", "ui-sans-serif", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        // Precise brand accents (presentation only). Gold stays restrained.
+        rv: {
+          navy: "#0A2854",
+          navy950: "#071B38",
+          blue: "#164E9A",
+          gold: "#D9A62E",
+          gold600: "#C99118",
+          ink: "#111827",
+          slate: "#64748B",
+          success: "#16805B",
+          danger: "#B42318",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

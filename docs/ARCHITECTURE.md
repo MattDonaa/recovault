@@ -124,6 +124,21 @@ No next milestone begins while a required check is RED.
 - **UI:** organizations can connect a **MOCK** demo marketplace (metadata only,
   clearly labeled, not persisted) and view adapter-derived counts.
 
+## Money Finder & Brand (established at Milestone 10)
+- **Money Finder** (`src/app/app/org/[orgId]/money-finder/`): overview
+  potential-recovery totals (exact minor units), candidate list with filters
+  (rule/confidence/status/marketplace), candidate detail with calculation +
+  evidence/source trace, and the `detected → investigating → accepted |
+  dismissed` workflow with authorized, audited server-side transitions. A MOCK
+  banner is always shown on mock financial screens; a language guardrail forbids
+  liability overstatement. Model in `docs/MONEY_FINDER.md`.
+- **MOCK-first pipeline:** the app runs the same deterministic core in memory
+  (`src/lib/marketplace/analysis.ts`, `money-finder-store.ts`) — identical to
+  the PGlite-verified DB path — so the cockpit works offline with exact money.
+- **Brand system applied** (first dashboard UI): self-hosted Inter/Manrope
+  fonts, navy-first palette with restrained gold (green = verified only), brand
+  tokens (`src/config/brand.ts`, `globals.css`), `BrandLogo`, favicon.
+
 ## Deterministic Recovery Engine (established at Milestone 09)
 - **Rules** (`src/core/recovery/`, marketplace-agnostic): versioned MR-001
   (inbound shipment discrepancy), MR-002 (return outcome/financial mismatch),

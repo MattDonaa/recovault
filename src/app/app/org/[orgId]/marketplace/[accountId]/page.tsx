@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { runAnalysisAction } from "@/app/money-finder-actions";
 import { RotateKeyForm } from "@/components/marketplace/rotate-key-form";
 import { VerifyButton } from "@/components/marketplace/verify-button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -86,7 +88,24 @@ export default async function MarketplaceConnectionPage({
               Credential: {connection.hasCredential ? "stored (encrypted)" : "none"}
             </p>
           ) : null}
-          <VerifyButton organizationId={orgId} connectionId={connection.id} />
+          <div className="flex flex-wrap items-center gap-2">
+            <VerifyButton organizationId={orgId} connectionId={connection.id} />
+            {isMock ? (
+              <form action={runAnalysisAction}>
+                <input type="hidden" name="organizationId" value={orgId} />
+                <input type="hidden" name="connectionId" value={connection.id} />
+                <Button type="submit" size="sm" variant="outline">
+                  Run analysis &amp; find money
+                </Button>
+              </form>
+            ) : null}
+            <Link
+              href={`/app/org/${orgId}/money-finder`}
+              className="text-sm underline"
+            >
+              Open Money Finder
+            </Link>
+          </div>
         </CardContent>
       </Card>
 

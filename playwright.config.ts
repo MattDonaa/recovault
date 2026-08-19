@@ -27,7 +27,7 @@ export default defineConfig({
     command: "npm run build && npm run start",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
+    timeout: 300_000,
     env: {
       // Deterministic session signing for E2E.
       AUTH_SESSION_SECRET: "e2e-session-secret-not-in-client-1234567890",

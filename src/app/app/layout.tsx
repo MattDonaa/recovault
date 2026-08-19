@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { requireSession } from "@/core/auth/guards";
 import { isMockMode } from "@/lib/auth";
@@ -16,9 +16,11 @@ export default async function AppLayout({
     <div className="min-h-screen">
       <header className="border-b">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-          <Link href="/app" className="flex items-center gap-2 font-semibold">
-            <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
-            RecoVault
+          <Link href="/app" className="flex items-center gap-2">
+            <BrandLogo variant="symbol" className="h-7 w-7" priority />
+            <span className="font-display text-lg font-bold tracking-tight text-primary">
+              RecoVault
+            </span>
           </Link>
           <div className="flex items-center gap-3">
             {isMockMode() ? (

@@ -4,24 +4,33 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Self-hosted brand fonts. */
+    --font-inter: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+      "Segoe UI", sans-serif;
+    --font-manrope: "Manrope Variable", "Inter Variable", ui-sans-serif,
+      system-ui, sans-serif;
+
+    /* RecoVault brand palette (navy-first, restrained gold). */
+    --background: 214 33% 97%; /* #F6F8FB */
+    --foreground: 222 47% 11%; /* ink #111827 */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --card-foreground: 222 47% 11%;
+    --primary: 216 79% 18%; /* navy900 #0A2854 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 94%;
+    --secondary-foreground: 216 79% 18%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 215 16% 47%; /* slate500 #64748B */
+    --accent: 42 70% 52%; /* gold500 #D9A62E */
+    --accent-foreground: 222 47% 11%;
+    --destructive: 4 76% 40%; /* danger #B42318 */
+    --destructive-foreground: 0 0% 100%;
+    --success: 159 71% 29%; /* #16805B — verified recovery only */
+    --success-foreground: 0 0% 100%;
+    --border: 214 32% 91%; /* slate200 #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 216 79% 30%;
+    --radius: 0.625rem;
   }
 
   .dark {
@@ -50,6 +59,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }

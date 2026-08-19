@@ -1,8 +1,8 @@
 # RecoVault — Project State
 
 ## Current Status
-- **Last GREEN milestone:** 09 — Deterministic Recovery Engine
-- **Current allowed milestone:** 10 — Money Finder
+- **Last GREEN milestone:** 10 — Money Finder
+- **Current allowed milestone:** 11 — Case Engine
 - **Operating mode:** MOCK-FIRST (auth runs in MOCK mode; Supabase + Takealot live paths implemented but unverified)
 - **Live seller credentials:** NOT AVAILABLE
 - **Live marketplace validation:** BLOCKED UNTIL AUTHORIZED SELLER ACCESS EXISTS
@@ -42,7 +42,8 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - Ingestion & Source Records: IMPLEMENTED (M07) — idempotent sync, full provenance, quarantine, tenant-isolated
 - Marketplace Ledger: IMPLEMENTED (M08) — deterministic normalizers, append-only idempotent events, source traceability, exact money
 - Recovery Engine: IMPLEMENTED (M09) — MR-001/002/003 deterministic detectors, explainable candidates, idempotent
-- Money Finder: NOT IMPLEMENTED — target Milestone 10 (NEXT ALLOWED)
+- Money Finder: IMPLEMENTED (M10) — cockpit UI (totals/list/filters/detail/evidence), candidate workflow, brand applied
+- Case Engine: NOT IMPLEMENTED — target Milestone 11 (NEXT ALLOWED)
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11
@@ -59,16 +60,16 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **Dependency audit:** 3 transitive HIGH advisories remain (`postcss` and `sharp`, both pulled in by Next.js). Their only fix is a Next.js 16 major upgrade, which removes `next lint` and would force an ESLint-flat-config migration. Both are build-time-only and non-exploitable in the current surface (`postcss` processes only our own trusted CSS; `sharp` runs only under `next/image` optimization, which is unused). Next.js is pinned to the patched **15.5.23** (direct CVE-2025-66478 resolved). The Next.js 16 migration is deferred to a dedicated, human-approved upgrade task.
 
 ## Current Development Permission
-Milestone 09 is GREEN. Claude Code may execute **Milestone 10 ONLY** once explicitly instructed.
+Milestone 10 is GREEN. Claude Code may execute **Milestone 11 ONLY** once explicitly instructed.
 
-It must not begin Milestone 11 or later until Milestone 10 passes every mandatory GREEN gate and this document is updated.
+It must not begin Milestone 12 or later until Milestone 11 passes every mandatory GREEN gate and this document is updated.
 
 ## Next Allowed Action
-Await explicit human instruction to begin Milestone 10. Then read, in order:
+Await explicit human instruction to begin Milestone 11. Then read, in order:
 1. `00-claude.md`
 2. `docs/PROJECT_STATE.md`
 3. `docs/ARCHITECTURE.md`
-4. `milestones/10-money-finder.md`
+4. `milestones/11-case-engine.md`
 
 Run the prior verification commands (`npm run check`, `npm run test:e2e`) before starting Milestone 04.
 
