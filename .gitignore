@@ -35,6 +35,10 @@ yarn-error.log*
 .env.production.local
 !.env.example
 
+# ad-hoc secret notes — NEVER commit (contains real credentials)
+Supabase.txt
+*.secret
+
 # vercel
 .vercel
 
