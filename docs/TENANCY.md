@@ -27,19 +27,31 @@ No table, type, or column is named after the brand (`RecoVault`) or a
 marketplace (`Takealot`); `marketplace` is a data value, never an identifier.
 
 ## Roles
-Supabase-native Postgres roles (mirrored offline by the test shim):
-- **`anon`** — unauthenticated. Holds **no** grant on tenant tables; access is
-  refused before RLS is consulted.
-- **`authenticated`** — end users. All access is constrained by the RLS
-  policies below, keyed on `auth.uid()` (the JWT `sub` claim).
+Supabase-native Postgres roles (mirrored offline by the test shim). Table
+privileges for all three are pinned explicitly by migrations `0010`
+(service_role) and `0011` (anon/authenticated + the service_role correction on
+`marketplace_accounts`) with `REVOKE`+`GRANT`, so the effective grants are
+deterministic and identical across local and hosted environments — **not**
+inherited from Supabase platform defaults. RLS is unchanged and remains the
+row-level authorization layer on top of these envelopes.
+- **`anon`** — unauthenticated. Holds **no** DML grant on any tenant table
+  (pinned by `0011`); access is refused at the privilege layer before RLS is
+  even consulted.
+- **`authenticated`** — end users. Table privileges are exactly the validated
+  client matrix (core tenancy CRUD; `audit_events` SELECT+INSERT; all
+  ingestion/ledger/candidate/case/recovery tables SELECT-only; no access to
+  `marketplace_credentials`), pinned by `0011`. Every row is further constrained
+  by the RLS policies below, keyed on `auth.uid()` (the JWT `sub` claim).
 - **`service_role`** — trusted server key. `BYPASSRLS`; used only for
   system/admin operations. Never exposed to the browser. Its **table
   privileges are defined explicitly by migration `0010`** (not by any
   environment default): the minimum SELECT/INSERT/UPDATE/DELETE each validated
   server workflow needs, with append-only history tables limited to
-  SELECT+INSERT and `marketplace_credentials` kept at the 0003 model. `BYPASSRLS`
-  removes row filtering, never the table-privilege check — so append-only tables
-  reject UPDATE/DELETE even for `service_role`.
+  SELECT+INSERT, no DML on `marketplace_accounts` (write path is the
+  authenticated owner/RLS route; corrected in `0011`), and
+  `marketplace_credentials` kept at the 0003 model. `BYPASSRLS` removes row
+  filtering, never the table-privilege check — so append-only tables reject
+  UPDATE/DELETE even for `service_role`.
 
 ## Membership roles
 `org_role` enum: `owner`, `admin`, `member`.
