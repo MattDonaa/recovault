@@ -31,9 +31,14 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **MR-003:v1** — Stock-Loss Event Without Matching Recovery (HIGH; reversal-aware)
 
 ## Database State
-- **Schema migration version:** 0009 (`0001`–`0008` + `0009_recovery_records.sql`)
-- **Supabase schema:** DEFINED via migrations (not yet applied to a live project)
+- **Schema migration version:** 0010 (`0001`–`0009` + `0010_service_role_privileges.sql`)
+- **Supabase schema:** DEFINED via migrations; applied and verified against a local
+  real Supabase stack (Supabase CLI `db reset`, migrations 0001–0010 clean from zero)
 - **RLS:** ENABLED + tested on all tenant tables (deny cross-tenant by default)
+- **Grants:** `service_role` table privileges are defined explicitly by migration
+  0010 (minimum per validated server workflow; append-only tables SELECT+INSERT
+  only; `marketplace_credentials` unchanged from 0003). No reliance on
+  environment-specific default grants. `anon`/`authenticated` grants unchanged.
 
 ## Module Status
 - Authentication & Organization Boundary: IMPLEMENTED (M03) — mock-mode verified; Supabase live path unverified
@@ -47,6 +52,7 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - Case Engine: IMPLEMENTED (M11) — case state machine, idempotent creation, append-only audit, evidence traceability
 - Evidence & Claim Tracking: IMPLEMENTED (M12) — deterministic evidence pack + PDF, manual claim submission, separate deadline clocks, no auto-submission
 - Recovery Verification & Production Readiness: IMPLEMENTED (M13) — deterministic recovery matching, reversal-aware, recovered totals, hardening (security headers, error boundaries, sanitized logging, prod env validation), clean-clone runbook
+- Service-role privilege portability: IMPLEMENTED (migration 0010) — explicit minimum `service_role` table grants proven against a local real Supabase stack (full ingestion→ledger→candidate→case→recovery write path; append-only preserved; RLS + cross-tenant isolation intact; anon/authenticated unchanged). Removes reliance on platform default grants. Not a milestone; schema-portability hardening only.
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11

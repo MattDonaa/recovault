@@ -5,7 +5,7 @@ Target platform: **Vercel** (Next.js App Router). Database & auth: **Supabase**.
 ## 1. Provision Supabase
 1. Create a Supabase project.
 2. Apply the SQL migrations in order — they are the single schema source of
-   truth (`supabase/migrations/0001_…` … `0009_…`), e.g. via the Supabase CLI:
+   truth (`supabase/migrations/0001_…` … `0010_…`), e.g. via the Supabase CLI:
    ```bash
    supabase link --project-ref <ref>
    supabase db push

@@ -33,7 +33,13 @@ Supabase-native Postgres roles (mirrored offline by the test shim):
 - **`authenticated`** — end users. All access is constrained by the RLS
   policies below, keyed on `auth.uid()` (the JWT `sub` claim).
 - **`service_role`** — trusted server key. `BYPASSRLS`; used only for
-  system/admin operations. Never exposed to the browser.
+  system/admin operations. Never exposed to the browser. Its **table
+  privileges are defined explicitly by migration `0010`** (not by any
+  environment default): the minimum SELECT/INSERT/UPDATE/DELETE each validated
+  server workflow needs, with append-only history tables limited to
+  SELECT+INSERT and `marketplace_credentials` kept at the 0003 model. `BYPASSRLS`
+  removes row filtering, never the table-privilege check — so append-only tables
+  reject UPDATE/DELETE even for `service_role`.
 
 ## Membership roles
 `org_role` enum: `owner`, `admin`, `member`.
