@@ -34,8 +34,12 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - **Schema migration version:** 0011 (`0001`–`0010` + `0011_least_privilege_grants.sql`)
 - **Supabase schema:** DEFINED via migrations; applied and verified against a local
   real Supabase stack (Supabase CLI `db reset`, migrations 0001–0011 clean from zero).
-  Migrations 0001–0010 also applied + verified on the hosted project
-  `fxesioydpmkgbycqsmts` (schema/RLS/write-path GREEN); **0011 not yet pushed to hosted.**
+  **Also applied + re-validated GREEN on the hosted project `fxesioydpmkgbycqsmts`:**
+  migration history count=11 (0001–0011); anon/authenticated/service_role grant
+  matrices match the least-privilege model exactly; hosted runtime security proofs
+  GREEN (cross-tenant isolation, anon denied, authenticated allowed reads +
+  forbidden writes denied, service_role full write path, append-only, idempotency,
+  owner trigger). Synthetic test data only, transactional and rolled back.
 - **RLS:** ENABLED + tested on all 16 tenant tables (deny cross-tenant by default)
 - **Grants (explicit, deterministic across environments):**
   - `service_role` — the minimum per validated server workflow (migration 0010),
@@ -62,7 +66,7 @@ Deterministic, rule-based (no ML). Documented in `docs/RECOVERY_RULES.md`.
 - Evidence & Claim Tracking: IMPLEMENTED (M12) — deterministic evidence pack + PDF, manual claim submission, separate deadline clocks, no auto-submission
 - Recovery Verification & Production Readiness: IMPLEMENTED (M13) — deterministic recovery matching, reversal-aware, recovered totals, hardening (security headers, error boundaries, sanitized logging, prod env validation), clean-clone runbook
 - Service-role privilege portability: IMPLEMENTED (migration 0010) — explicit minimum `service_role` table grants proven against a local real Supabase stack (full ingestion→ledger→candidate→case→recovery write path; append-only preserved; RLS + cross-tenant isolation intact). Removes reliance on platform default grants. Not a milestone; schema-portability hardening only.
-- Least-privilege grant hardening: IMPLEMENTED (migration 0011) — explicit REVOKE+GRANT pinning `anon` (no tenant-table DML), `authenticated` (exact 0002–0009 client matrix), and `service_role` (0010 matrix, minus platform-default DML on `marketplace_accounts`). Deterministic across local and hosted; RLS/policies/schema/logic unchanged. Verified locally (db reset 0001–0011 + runtime security proofs + offline regression test that simulates hosted platform defaults and proves 0011 strips them). Not a milestone; defense-in-depth hardening only. Hosted push pending.
+- Least-privilege grant hardening: IMPLEMENTED (migration 0011) — explicit REVOKE+GRANT pinning `anon` (no tenant-table DML), `authenticated` (exact 0002–0009 client matrix), and `service_role` (0010 matrix, minus platform-default DML on `marketplace_accounts`). Deterministic across local and hosted; RLS/policies/schema/logic unchanged. Verified locally (db reset 0001–0011 + runtime security proofs + offline regression test that simulates hosted platform defaults and proves 0011 strips them) AND re-validated on hosted `fxesioydpmkgbycqsmts` (grant matrices + runtime proofs GREEN). Not a milestone; defense-in-depth hardening only.
 - Recovery Engine: NOT IMPLEMENTED — target Milestone 09
 - Money Finder: NOT IMPLEMENTED — target Milestone 10
 - Case Engine: NOT IMPLEMENTED — target Milestone 11
